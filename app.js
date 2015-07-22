@@ -8,7 +8,7 @@ var bodyParser = require('body-parser');
 // For retrieving (local) environment variables.
 var env = require('node-env-file');
 //
-if (!process.env.NODE_ENV) {
+if (!process.env.MONGOLAB_URI) {
   console.log('process.env.NODE_ENV is undefined.');
   // If we're in development, get the environment variables.
   env(__dirname + '/.env');
