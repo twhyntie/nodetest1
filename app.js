@@ -5,6 +5,27 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// For retrieving (local) environment variables.
+var env = require('node-env-file');
+//
+if (!process.env.NODE_ENV) {
+  console.log('process.env.NODE_ENV is undefined.');
+  // If we're in development, get the environment variables.
+  env(__dirname + '/.env');
+}
+
+// Database code.
+var mongo = require('mongodb');
+var monk = require('monk');
+//
+console.log(process.env.MONGOLAB_URI);
+
+// The URI for the MongoLab database. 
+var db_uri = process.env.MONGOLAB_URI;
+
+// The database.
+var db = monk(db_uri);
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -21,6 +42,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Make our db accessible to our router
+app.use(function(req,res,next){
+  req.db = db;
+  next();
+});
 
 app.use('/', routes);
 app.use('/users', users);
@@ -55,6 +82,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
